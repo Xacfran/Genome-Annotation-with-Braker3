@@ -15,7 +15,7 @@ You will only need to have Singularity installed. Singularity is a tool that all
 
  Luckily for us, Singularity is already installed at the HPCC. If you are using your own computer, you can follow the instructions [here](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) to install it.
 
-Lastly, the files you will use in this tutorial are available at my [GitHub repository]() if you are not a Tech student. If you are working on the HPCC, you can copy them to your own directory with:
+Lastly, the files you will use in this tutorial are available at my [GitHub repository](https://github.com/Xacfran/Genome-Annotation-with-Braker3) if you are not a Tech student. If you are working on the HPCC, you can copy them to your own directory with:
 
 ```bash
 cp /lustre/work/frcastel/software/braker/scaffold_myo_myo.fasta .
