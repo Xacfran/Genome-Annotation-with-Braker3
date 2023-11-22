@@ -1,5 +1,8 @@
 # Genome Annotation
 
+[![hackmd-github-sync-badge](https://hackmd.io/jqXB_tEgQtWxRVZc1ChNeQ/badge)](https://hackmd.io/jqXB_tEgQtWxRVZc1ChNeQ)
+
+
 > [name=Updated:] [time=Fri, Nov, 2023 2:00 PM]
 
 ###### tags: `genome annotation` `singularity` `BRAKER3`
