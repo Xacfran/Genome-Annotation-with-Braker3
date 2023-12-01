@@ -3,9 +3,7 @@
 
 ###### tags: `genome annotation` `singularity` `BRAKER3`
 
-###### Last updated: Nov 22, 2023 
-###### This still work in progress
-
+###### Last updated: Nov 30, 2023
 ------------------------------------------------------------------------
 
 This tutorial was written for students of the Genomes and Genome Evolution course at Texas Tech and tested at the [High Performance Computing Cluster](https://https://www.depts.ttu.edu/hpcc/) (HPCC) of this University.
@@ -23,7 +21,7 @@ cp /lustre/work/frcastel/software/braker/scaffold_myo_myo.fasta .
 cp /lustre/work/frcastel/software/braker/filtered_mammalia.fasta .
 ```
 
-The first file is the largest scaffold of the genome assembly of the bat *Myotis myotis* you worked with some weeks ago, and the second one is a filtered version of the [Vertebrata dataset](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb11/) from [OrthoDB](https://www.orthodb.org/). We'll use this dataset to train the gene models, but first lets get the file that will allow us to use BRAKER3.
+The first file is the largest scaffold of the genome assembly of the bat *Myotis myotis* you worked with some weeks ago, and the second one is a filtered version (3,835,124 proteins) of the [Vertebrata dataset](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb11/) from [OrthoDB](https://www.orthodb.org/). We'll use this dataset to train the gene models, but first lets get the file that will allow us to use BRAKER3.
 
 ## <i class="fa fa-gears fa-lg"></i> Installation
 
@@ -35,7 +33,7 @@ singularity build braker3.sif docker://teambraker/braker3:latest
 
 ## <i class="fa fa-code fa-lg"></i> Usage
 
-BRAKER3 runs in different modes, it can make use of the genome alone, genome + proteins, genome + RNA-seq, or all of them. You can find the details of how each mode works [here](https://github.com/Gaius-Augustus/BRAKER#overview-of-modes-for-running-braker). In this tutorial we will use proteins, but first lets use some test scripts and data to make sure it works.
+BRAKER3 runs in different modes, it can make use of the genome alone, genome + proteins, genome + RNA-seq, or all of them. You can find the details of how each mode works [here](https://github.com/Gaius-Augustus/BRAKER#overview-of-modes-for-running-braker). In this tutorial we will use proteins, but first lets use some test scripts to make sure it works.
 
 ### Test data
 
@@ -88,9 +86,9 @@ singularity exec -B ${WORKDIR}:${WORKDIR} ${BRAKER_SIF} braker.pl \
 ```
 Simple, right? Let's break it down. It is extremely important that you understand what each of the arguments in `braker.pl` do, and what others are available to you. You can find a large list of those arguments by running `singularity exec -B ${PWD}:${PWD} ${BRAKER_SIF} braker.pl --help`.
 
-The `INPUT FILE OPTIONS` section contains all arguments related to the data you will give BRAKER3 to do the genome annotation. The first option is of course the genome assembly, which you provide with the `--genome` argument, followed by `--bam`, in case you had bam files of RNA-Seq alignments, and `--prot_seq`. The proteins you choose to use here will make a huge impact on the genome annotation, and eventhough BRAKER3 does a fairly good job when using protein evidence of distantly related species, it is always better to use proteins from closely related ones. The `--hints` argument will be used only if you have any sort information regarding the intron structure of the species (or closely related), and/or if you trained a gene model with any other software before. Last arguments available for data input are for raw RNA-Seq. I encountered some problems with it when I tried to use it, so we will not cover it in class but I made a genome annotation using the RNA-Seq data of *Myotis myotis* and you will be given the data to compare later.
+The `INPUT FILE OPTIONS` section contains all arguments related to the data you will give BRAKER3 to do the genome annotation. The first option is of course the genome assembly, which you provide with the `--genome` argument, `--bam` can be used if you had bam files of RNA-Seq alignments, and `--prot_seq` if you have some proteins. The proteins you choose to use here will make a huge impact on the genome annotation, and eventhough BRAKER3 does a fairly good job when using protein evidence of distantly related species, it is always better to use proteins from closely related ones. The `--hints` argument will be used only if you have any sort information regarding the intron structure of the species (or closely related), and/or if you trained a gene model with any other software before hand. Last arguments available for data input are for raw RNA-Seq which are automatically downloaded from the [SRA](https://www.ncbi.nlm.nih.gov/sra). I encountered some problems with those flags when I tried to use them, so we will not cover it in class. However, I was able to annotate that scaffold using RNA-Seq data of the liver, brain and kidney of *Myotis myotis*. You will have a look at those results to do some comparisons later.
 
-The other sections contain arguments related to how you want the algorithm to behave and I reccommend you have a close look to all of them if you are performing a genome annotation of your own. Especially in non-model organisms. The arguments we are using from all of those options are `--softmasking` which lets the gene finders know that we have marked repetitive regions with low-case letters (a,t,c,g), `--threads` to speed up the process using all cores available. I use `$SLURM_NTASKS` because it takes the number that we provide in `#SBATCH --ntasks=36` and uses all those processors by default. Finally, `--gff3` is a personal preference to get a `gff3` besides the `gtf` file that BRAKER3 gives as default. For me, it is much easier to transform `gff3` files into any other format and to extract information that we are interested in.
+The other sections of the help page contain arguments related to how you want the algorithm to behave and I reccommend you have a close look to all of them if you are performing a genome annotation of your own. Especially in non-model organisms. The arguments we are using from all of those options are `--softmasking` which lets the gene finders know that we have marked repetitive regions in the DNA with low-case letters (a,t,c,g), `--threads` to speed up the process using all cores available. I use `$SLURM_NTASKS` in there because it takes the number that we provide in `#SBATCH --ntasks=36` and uses all those processors by default. Finally, `--gff3` is a personal preference to get a `gff3` besides the `gtf` file that BRAKER3 gives as default. For me, it is much easier to transform `gff3` files into any other format and to extract information that we are interested in from there.
 
 This example took around 7 hours to complete, so make sure you start working on it soon! Besides the `braker.gtf`, `braker.aa` and `braker.codingseq` files you will find in your `myo_myo` directory, you can also see in the last lines of your err file something like:
 
@@ -103,20 +101,20 @@ This example took around 7 hours to complete, so make sure you start working on 
 ```
 ## For you to do
 
-Once the genome annotation has completed, use the skills you have acquired in this course to answer the questions below. All questions can be answered with the commands you learned how to use in [Tutorial 1, Logging In to HPCC and an Intro to Bash and Linux Navigation](https://github.com/davidaray/Genomes-and-Genome-Evolution/wiki/01.-Logging-In-to-HPCC-and-an-Intro-to-Bash-and-Linux-Navigation).
+Once the genome annotation has completed, use the skills you have acquired in this course to answer the questions below. All these questions can be answered with the commands you have learned in this course. If you need a refresher, go to [Tutorial 1, Logging In to HPCC and an Intro to Bash and Linux Navigation](https://github.com/davidaray/Genomes-and-Genome-Evolution/wiki/01.-Logging-In-to-HPCC-and-an-Intro-to-Bash-and-Linux-Navigation).
 
-1. How many genes were annotated in this scaffold of the Myotis myotis genome?
+1. How many genes were annotated in this scaffold of the *Myotis myotis* genome?
 
-2. Based on your answer to the previous question, what is the gene density of this scaffold? That is gene number/genome size. In this case, this scaffold is 223,369,599 bp long.
+2. Based on your answer to the previous question, what is the gene density of this scaffold? That is, gene number/genome size. In this case, this scaffold is 223,369,599 bp long.
 
 3. Are all of them protein coding genes? You can compare the braker.aa and braker.gff3 files to answer this question.
 
-4. Because of time limits we couldn't work on functional annotation of the genes, but you can still get an idea of what functions the annotated genes may have. Use the `braker.aa` file and randomly pick a protein sequence (Please avoid using the first gene "g1.t1"). you can use the [BLASTp](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins) tool to search for homologous proteins in the [NCBI non-redundant protein database](https://www.ncbi.nlm.nih.gov/refseq/about/nonredundantproteins/). You can use the default parameters for the BLAST search, so just copy the protein sequence and let the web-tool do its work.
+4. Because of time limits we couldn't work on functional annotation of the genes, but you can still get an idea of what functions the annotated genes may have. Use the `braker.aa` file and randomly pick a protein sequence (Please avoid using the first gene "g1.t1"). You can use the [BLASTp](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins) tool to search for homologous proteins in the [NCBI non-redundant protein database](https://www.ncbi.nlm.nih.gov/refseq/about/nonredundantproteins/). You can use the default parameters for the BLAST search, so just copy the protein sequence and let the web-tool do its work.
 From my experience, though, it is way better to use the [InterProScan](https://www.ebi.ac.uk/interpro/search/sequence/) tool to search for protein domains. So, again use the same protein you blasted and search for protein domains in the InterPro web page.
 Now, if you were to report this gene in a paper, what would you say about it? How many exons and introns does it have? What's the length of that gene? What's its most likely function?
-Please attach a screenshot of the NCBI, Interpro and the braker.gff3 files to this answer.
+Please attach a screenshot of the NCBI, Interpro, section of the braker.gff3 file, and anything else you used to come up with your answer.
 
-5. Copy the files I obtained as resultf of the genome annotation of *Myotis myotis* using RNA-Seq data to your own directory with: `cp /lustre/work/frcastel/software/braker/myo_myo_rna/braker_rna.* .` and answer the same questions as in 1 and 2. You can also compare the results of the two annotations. Are they similar? Why do you think that is?
+5. Copy the files I obtained when annotating the genome using RNA-Seq data. You can do this with: `cp /lustre/work/frcastel/software/braker/myo_myo_rna/braker_rna.* .`. Answer the same questions as in 1 and 2. Are the annotations done with genome + proteins, and genome + proteins + RNA-Seq data similar? Why do you think that is?
 
 ##  Sources and further reading
 
