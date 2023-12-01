@@ -48,7 +48,7 @@ singularity exec -B $PWD:$PWD braker3.sif cp /opt/BRAKER/example/singularity-tes
 singularity exec -B $PWD:$PWD braker3.sif cp /opt/BRAKER/example/singularity-tests/test3.sh .
 ```
 
- For this tutorial we will only use the first one `test1.sh`, but you can try the others on your own. Run the script with `bash test1.sh`.
+ For this tutorial we will only use the first one `test1.sh`, but you can try the others on your own. Before running the test, let's make sure we incorporate BRAKER3 into our path with `export BRAKER_SIF=/path/to/your/braker3.sif`, and then run the script with `bash test1.sh`.
 
 After a few minutes you will notice a directory named `test1` containing the annotation results. You can take a look at the files with `ls test1`. If you see the files: `braker.gtf`, `braker.aa` and `braker.codingseq`, and they are not empty, then everything worked fine. Let's proceed with our own data.
 
