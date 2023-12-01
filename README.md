@@ -113,7 +113,7 @@ Once the genome annotation has been completed, use the skills you have acquired 
 
 2. Based on your answer to the previous question, what is the gene density of this scaffold? That is gene number/genome size. In this case, this scaffold is 223,369,599 bp long.
 
-3. Are all of them protein-coding genes? You can compare the braker.aa and braker.gff3 files to answer this question.
+3. Are all of them protein-coding genes? You can compare the braker.aa and braker.codingseq files to answer this question.
 
 4. Because of time limits we couldn't work on functional annotation of the genes, but you can still get an idea of what functions the annotated genes may have. Use the `braker.aa` file and randomly pick a protein sequence (Please avoid using the first genes listed, explore the file a bit more). You can use the [BLASTp](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins) tool to search for homologous proteins. Use the default parameters for the BLAST search, so just copy the protein sequence and let the web tool do its work.
 From my experience, though, it is way better to use the [InterProScan](https://www.ebi.ac.uk/interpro/search/sequence/) tool to search for protein domains. Use the same protein you used for the BLAST search and compare both results.
