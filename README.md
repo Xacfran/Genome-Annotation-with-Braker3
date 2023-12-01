@@ -3,7 +3,7 @@
 
 ###### tags: `genome annotation` `singularity` `BRAKER3`
 
-###### Last updated: Nov 30, 2023
+###### Last updated: Dec 1, 2023
 ------------------------------------------------------------------------
 
 This tutorial was written for students of the Genomes and Genome Evolution course at Texas Tech and tested at the [High Performance Computing Cluster](https://https://www.depts.ttu.edu/hpcc/) (HPCC) of this University.
@@ -96,7 +96,7 @@ The `INPUT FILE OPTIONS` section contains all arguments related to the data you 
 The other sections of the help page contain arguments related to how you want the algorithm to behave. I reccommend you have a close look to all of them, especially if you are performing a genome annotation in non-model organisms. The arguments we are using from all of those options are `--softmasking` which indicates the gene finders that we have marked repetitive regions in the DNA with lowercase letters (a,t,c,g); `--threads` to speed up the process using all cores available. I use `$SLURM_NTASKS` in there because it takes the number that we provide in `#SBATCH --ntasks=36` and uses all those processors by default. Finally, `--gff3` is a personal preference to get a `GFF3` besides the `GTF` file that BRAKER3 gives as default. For me, it is more convenient to transform GFF3 files into various formats and extract relevant information.
 
 This example took around 7 hours to complete, so make sure you start working on it soon!
-If you are wondering wheher or not BRAKER3 completed its job succesfully, besides the `braker.gtf`, `braker.aa` and `braker.codingseq` files you will find in your `myo_myo` directory, you can also open the `err` file and will notice in the last lines the following:
+If you are wondering wether or not BRAKER3 completed its job succesfully, besides the `braker.gtf`, `braker.aa` and `braker.codingseq` files you will find in your `myo_myo` directory, you can also open the `err` file and will notice in the last lines the following:
 
 ```
 [Wed Nov 22 05:57:01 2023] Finished spliced alignment
@@ -115,12 +115,16 @@ Once the genome annotation has completed, use the skills you have acquired in th
 
 3. Are all of them protein coding genes? You can compare the braker.aa and braker.gff3 files to answer this question.
 
-4. Because of time limits we couldn't work on functional annotation of the genes, but you can still get an idea of what functions the annotated genes may have. Use the `braker.aa` file and randomly pick a protein sequence (Please avoid using the first gene "g1.t1"). You can use the [BLASTp](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins) tool to search for homologous proteins in the [NCBI non-redundant protein database](https://www.ncbi.nlm.nih.gov/refseq/about/nonredundantproteins/). You can use the default parameters for the BLAST search, so just copy the protein sequence and let the web-tool do its work.
-From my experience, though, it is way better to use the [InterProScan](https://www.ebi.ac.uk/interpro/search/sequence/) tool to search for protein domains. So, again use the same protein you blasted and search for protein domains in the InterPro web page.
+4. Because of time limits we couldn't work on functional annotation of the genes, but you can still get an idea of what functions the annotated genes may have. Use the `braker.aa` file and randomly pick a protein sequence (Please avoid using the first genes listed, explore the file a bit more). You can use the [BLASTp](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins) tool to search for homologous proteins. Use the default parameters for the BLAST search, so just copy the protein sequence and let the web-tool do its work.
+From my experience, though, it is way better to use the [InterProScan](https://www.ebi.ac.uk/interpro/search/sequence/) tool to search for protein domains. Use the same protein you used for the BLAST search and compare both results.
 Now, if you were to report this gene in a paper, what would you say about it? How many exons and introns does it have? What's the length of that gene? What's its most likely function?
-Please attach a screenshot of the NCBI, Interpro, section of the braker.gff3 file, and anything else you used to come up with your answer.
+Please attach a screenshot of the NCBI and InterPro searches, and anything else you used to come up with your answer, including the name of the gene and the position of the genome it is located in.
 
-5. Copy the files I obtained when annotating the genome using RNA-Seq data. You can do this with: `cp /lustre/work/frcastel/software/braker/myo_myo_rna/braker_rna.* .`. Answer the same questions as in 1 and 2. Are the annotations done with genome + proteins, and genome + proteins + RNA-Seq data similar? Why do you think that is?
+5. Copy the files I obtained from the genome annotation using proteins and RNA-Seq data, and answer the same questions as in 1 and 2. You can get these files with: `cp /lustre/work/frcastel/software/braker/myo_myo_rna/braker_rna.* .`. Are the annotations derived from the combination of genome and proteins comparable to those resulting from the combination of genome, proteins, and RNA-Seq data? Which of both would you trust more? Why?
+
 
 ##  Sources and further reading
 
+Understanding what is happening behind the scenes is fundamental to get the big picture of genome annotation. I highly recommend you read the [BRAKER3 paper](https://www.biorxiv.org/content/10.1101/2023.06.10.544449v3) to get a better grasp of the process. You should also read the [BRAKER3 GitHub repository](https://github.com/Gaius-Augustus/BRAKER#f19) to familiarize a lot more with its utilities. Even better, [here's a great lecture]((https://www.youtube.com/watch?v=UXTkJ4mUkyg&t=2967s&ab_channel=BiodiversityGenomicsAcademy)) by one the authors of BRAKER3, in which most of the details of their software are covered. Additionally, [this page](https://gatech-genemark.github.io/GeneMark-E-Docs/#/) has tons of information and details about how to prepare protein evidence, how to evaluate the annotation, and much more that we couldn't cover in class.
+
+Eventhough the gene training is done automatically by BRAKER3, you can get a lot more control of the process if you run it using [Augustus](https://bioinf.uni-greifswald.de/augustus/) first, you can venture yourself in trying to get some evidence *a priori*, to incorporate into BRAKER3 later on. [This tutorial](https://vcru.wisc.edu/simonlab/bioinformatics/programs/augustus/docs/tutorial2015/training.html) is straightforward, although it won't show you how to install it, and that can be a long process most of the times. You can read the [AUGUSTUS paper](https://academic.oup.com/bioinformatics/article/26/8/1129/193348) and the [GitHub repository](https://github.com/Gaius-Augustus/Augustus).
