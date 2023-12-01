@@ -10,9 +10,11 @@ This tutorial was written for students of the Genomes and Genome Evolution cours
 
 ## <i class="fa fa-download fa-lg"></i> Pre-requisites
 
-You will only need to have Singularity installed. Singularity is a tool that allows you to create and run applications in containers. What are containers you may ask? Of course the name gives away what they do, they contain things. In this case, all the software and dependencies you need to run a specific application. This is AWESOME because you only need to have a **S**ingularity **I**mage **F**ormat (SIF) and anything else. This is great because otherwise it may take you months to install everything you need, I know this from experience. Take a look at [this](https://github.com/Gaius-Augustus/BRAKER#braker) and you'll see everything you would need to manually install to use BRAKER3 to annotate a genome.
+You will only need [Singularity](https://apptainer.org/) installed in your computer or cluster. Singularity, now also called Apptainer, is a tool that enables you to create and run applications in containers. What are containers, you may ask? Of course the name gives away their function—they contain things. In this case, they encapsulate all the software and dependencies you need to run a specific application. This is **AWESOME** because you only need to have a **S**ingularity **I**mage **F**ormat (SIF) and nothing else.
 
- Luckily for us, Singularity is already installed at the HPCC. If you are using your own computer, you can follow the instructions [here](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) to install it.
+Essentially a SIF file is a pre-made, tiny operating system that contains everything you need to run a process. Once that image is created, you can use it instead of installing every piece of software yourself. This is terrific because otherwise it may take you months to install everything you need. I know this from experience. Take a look at [this extensive list](https://github.com/Gaius-Augustus/BRAKER#braker) of software, dependencies, and setup steps you would have to perform first before attempting to use BRAKER3 to annotate a genome.
+
+ Luckily for us, Singularity is already installed on the HPCC. If you are using your own computer, you can follow the instructions [here](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) to install it.
 
 Lastly, the files you will use in this tutorial are available at my [GitHub repository](https://github.com/Xacfran/Genome-Annotation-with-Braker3) if you are not a Tech student. If you are working on the HPCC, you can copy them to your own directory with:
 
@@ -21,7 +23,7 @@ cp /lustre/work/frcastel/software/braker/scaffold_myo_myo.fasta .
 cp /lustre/work/frcastel/software/braker/filtered_mammalia.fasta .
 ```
 
-The first file is the largest scaffold of the genome assembly of the bat *Myotis myotis* you worked with some weeks ago, and the second one is a filtered version (3,835,124 proteins) of the [Vertebrata dataset](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb11/) from [OrthoDB](https://www.orthodb.org/). We'll use this dataset to train the gene models, but first lets get the file that will allow us to use BRAKER3.
+The first file is the largest scaffold of the genome assembly of the bat *Myotis myotis* you worked with some weeks ago, and the second one is a filtered version comprising 3,835,124 proteins from the largest database of the [Vertebrata dataset](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb11/) from [OrthoDB](https://www.orthodb.org/), which houses over 9 million proteins. We'll use this dataset to train the gene models, but first lets get the file that will allow us to use BRAKER3.
 
 ## <i class="fa fa-gears fa-lg"></i> Installation
 
@@ -33,9 +35,12 @@ singularity build braker3.sif docker://teambraker/braker3:latest
 
 ## <i class="fa fa-code fa-lg"></i> Usage
 
-BRAKER3 runs in different modes, it can make use of the genome alone, genome + proteins, genome + RNA-seq, or all of them. You can find the details of how each mode works [here](https://github.com/Gaius-Augustus/BRAKER#overview-of-modes-for-running-braker). In this tutorial we will use proteins, but first lets use some test scripts to make sure it works.
+BRAKER3 runs in different modes. It can make use of the genome alone, genome + proteins, genome + RNA-Seq, or all of them. You can find the details of how each mode works [here](https://github.com/Gaius-Augustus/BRAKER#overview-of-modes-for-running-braker).
+In this tutorial we will use proteins, but first lets use some test scripts to make sure it works.
 
 ### Test data
+
+We will download 3 test scripts that will run BRAKER3 in different modes.
 
 ```bash
 singularity exec -B $PWD:$PWD braker3.sif cp /opt/BRAKER/example/singularity-tests/test1.sh .
@@ -43,9 +48,9 @@ singularity exec -B $PWD:$PWD braker3.sif cp /opt/BRAKER/example/singularity-tes
 singularity exec -B $PWD:$PWD braker3.sif cp /opt/BRAKER/example/singularity-tests/test3.sh .
 ```
 
-This will download 3 test scripts that will run BRAKER3 in different modes. For this tutorial we will only use the first one, but you can try the others on your own. You can run the script with `bash test1.sh`.
+ For this tutorial we will only use the first one `test1.sh`, but you can try the others on your own. Run the script with `bash test1.sh`.
 
-After some minutes you will see a directory called `test1` with the results of the annotation. You can take a look at the files with `ls test1`. If you see the files `braker.gtf`, `braker.aa` and `braker.codingseq`, and if they are not empty, then everything worked fine. Now moving on with our own data.
+After a few minutes you will notice a directory named `test1` containing the annotation results. You can take a look at the files with `ls test1`. If you see the files: `braker.gtf`, `braker.aa` and `braker.codingseq`, and they are not empty, then everything worked fine. Let's proceed with our own data.
 
 ### Annotating a bat genome assembly
 
@@ -84,13 +89,14 @@ singularity exec -B ${WORKDIR}:${WORKDIR} ${BRAKER_SIF} braker.pl \
 --threads $SLURM_NTASKS \
 --gff3
 ```
-Simple, right? Let's break it down. It is extremely important that you understand what each of the arguments in `braker.pl` do, and what others are available to you. You can find a large list of those arguments by running `singularity exec -B ${PWD}:${PWD} ${BRAKER_SIF} braker.pl --help`.
+Simple, right? Let's break it down. It is crucial that you understand what each of the arguments do, and are aware of other available options. You can find a large list of those arguments by running `singularity exec -B ${PWD}:${PWD} ${BRAKER_SIF} braker.pl --help`.
 
-The `INPUT FILE OPTIONS` section contains all arguments related to the data you will give BRAKER3 to do the genome annotation. The first option is of course the genome assembly, which you provide with the `--genome` argument, `--bam` can be used if you had bam files of RNA-Seq alignments, and `--prot_seq` if you have some proteins. The proteins you choose to use here will make a huge impact on the genome annotation, and eventhough BRAKER3 does a fairly good job when using protein evidence of distantly related species, it is always better to use proteins from closely related ones. The `--hints` argument will be used only if you have any sort information regarding the intron structure of the species (or closely related), and/or if you trained a gene model with any other software before hand. Last arguments available for data input are for raw RNA-Seq which are automatically downloaded from the [SRA](https://www.ncbi.nlm.nih.gov/sra). I encountered some problems with those flags when I tried to use them, so we will not cover it in class. However, I was able to annotate that scaffold using RNA-Seq data of the liver, brain and kidney of *Myotis myotis*. You will have a look at those results to do some comparisons later.
+The `INPUT FILE OPTIONS` section contains all arguments related to the data you will give BRAKER3 to do the genome annotation. The first option is, of course, the genome assembly, which is specified with the `--genome` argument. The `--bam` option can be used if you had BAM files of RNA-Seq alignments, while `--prot_seq` if you have some proteins. The choice of proteins will make a huge impact on annotation. Although BRAKER3 does a fairly good job when using protein evidence of distantly related species, using proteins from closely related ones is generally preferred. The `--hints` argument is utilized when there is about the intron structure of the species (or closely related ones), or if a gene model was trained with another software beforehand. The last arguments for data input are for raw RNA-Seq which are automatically downloaded from the [SRA](https://www.ncbi.nlm.nih.gov/sra). I encountered some problems with those flags when I tried to use them, so we will not cover it in class. However, I was able to annotate the scaffold use as example with RNA-Seq data from the liver, brain and kidney of *Myotis myotis*. You will examine those results later for comparison.
 
-The other sections of the help page contain arguments related to how you want the algorithm to behave and I reccommend you have a close look to all of them if you are performing a genome annotation of your own. Especially in non-model organisms. The arguments we are using from all of those options are `--softmasking` which lets the gene finders know that we have marked repetitive regions in the DNA with low-case letters (a,t,c,g), `--threads` to speed up the process using all cores available. I use `$SLURM_NTASKS` in there because it takes the number that we provide in `#SBATCH --ntasks=36` and uses all those processors by default. Finally, `--gff3` is a personal preference to get a `gff3` besides the `gtf` file that BRAKER3 gives as default. For me, it is much easier to transform `gff3` files into any other format and to extract information that we are interested in from there.
+The other sections of the help page contain arguments related to how you want the algorithm to behave. I reccommend you have a close look to all of them, especially if you are performing a genome annotation in non-model organisms. The arguments we are using from all of those options are `--softmasking` which indicates the gene finders that we have marked repetitive regions in the DNA with lowercase letters (a,t,c,g); `--threads` to speed up the process using all cores available. I use `$SLURM_NTASKS` in there because it takes the number that we provide in `#SBATCH --ntasks=36` and uses all those processors by default. Finally, `--gff3` is a personal preference to get a `GFF3` besides the `GTF` file that BRAKER3 gives as default. For me, it is more convenient to transform GFF3 files into various formats and extract relevant information.
 
-This example took around 7 hours to complete, so make sure you start working on it soon! Besides the `braker.gtf`, `braker.aa` and `braker.codingseq` files you will find in your `myo_myo` directory, you can also see in the last lines of your err file something like:
+This example took around 7 hours to complete, so make sure you start working on it soon!
+If you are wondering wheher or not BRAKER3 completed its job succesfully, besides the `braker.gtf`, `braker.aa` and `braker.codingseq` files you will find in your `myo_myo` directory, you can also open the `err` file and will notice in the last lines the following:
 
 ```
 [Wed Nov 22 05:57:01 2023] Finished spliced alignment
